@@ -75,7 +75,7 @@ object Recursion {
   type Algebra[F[_], S] = F[S] => S
   type CoAlgebra[F[_], S] = S => F[S]
   // based on https://twitter.com/NicolasRinaudo/status/1273938027782508545
-  def cata[F[_]: Functor, A, B](algebra: F[B] => B)(coAlgebra: A => F[A]): A => B = 
+  def hylo[F[_]: Functor, A, B](algebra: F[B] => B)(coAlgebra: A => F[A]): A => B = 
     new (A => B) { self =>
       override def apply(a: A): B = algebra(coAlgebra(a).fmap(self))
     }
@@ -102,7 +102,7 @@ object Recursion {
   }
   
   implicit class SchemaRecursionOps(val schema: Schema) extends AnyVal {
-    def cata[A](algebra: Algebra[SchemaF, A]): A = Recursion.cata(algebra)(projectSchema).apply(schema)
+    def cata[A](algebra: Algebra[SchemaF, A]): A = Recursion.hylo(algebra)(projectSchema).apply(schema)
   }
 }
 
