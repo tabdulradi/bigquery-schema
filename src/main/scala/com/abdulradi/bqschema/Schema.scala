@@ -74,10 +74,7 @@ object Schema {
 object Recursion {
   type Algebra[F[_], S] = F[S] => S
   type CoAlgebra[F[_], S] = S => F[S]
-  /**
-    * Acknowledgement: This encoding of recursion schemes without Fix is Nicolas Rinaudo's idea 
-    * as explained here https://twitter.com/NicolasRinaudo/status/1273938027782508545
-    */
+  // based on https://twitter.com/NicolasRinaudo/status/1273938027782508545
   def cata[F[_]: Functor, A, B](algebra: F[B] => B)(coAlgebra: A => F[A]): A => B = 
     new (A => B) { self =>
       override def apply(a: A): B = algebra(coAlgebra(a).fmap(self))
